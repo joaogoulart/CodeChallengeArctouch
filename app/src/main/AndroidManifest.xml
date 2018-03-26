@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".home.HomeActivity" />
+        <activity android:name=".features.home.activity.HomeActivity" />
 
     </application>
 
