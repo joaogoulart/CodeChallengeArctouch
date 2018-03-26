@@ -6,26 +6,38 @@ import com.arctouch.codechallenge.data.Cache
 import com.arctouch.codechallenge.features.home.activity.ViewCallback
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractor
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractorImpl
+import com.arctouch.codechallenge.model.Movie
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 /**
  * Created by Joao on 25/03/2018.
  */
-class HomePresenterImpl(val viewCallback: ViewCallback, val interactor: HomeInteractor = HomeInteractorImpl(viewCallback as LifecycleOwner)): HomePresenter {
-
+class HomePresenterImpl(private val viewCallback: ViewCallback, private val interactor: HomeInteractor = HomeInteractorImpl()): HomePresenter, HomeInteractor.UpcomingMoviesListener {
 
     override fun onCreate() {
         viewCallback.setUpRecycler()
-        interactor.getUpcomingMovies(1, ApiConstants.DEFAULT_REGION)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    val moviesWithGenres = it.results.map { movie ->
-                        movie.copy(genres = Cache.genres.filter { movie.genreIds?.contains(it.id) == true })
-                    }
-                    viewCallback.hideProgress()
-                    viewCallback.populateRecycler(moviesWithGenres)
-                }
+        interactor.getUpcomingMovies(1, ApiConstants.DEFAULT_REGION, this)
+    }
+
+
+    override fun onUpcomingMoviesError(code: Int, msg: String) {
+        viewCallback.hideProgress()
+        if (code == 1) {
+            viewCallback.showNoMovies()
+            return
+        }
+
+        viewCallback.showError(msg)
+    }
+
+    override fun onUpcomingMoviesSuccess(moviesWithGenres: List<Movie>) {
+        viewCallback.hideProgress()
+        viewCallback.hideNoMovies()
+        viewCallback.populateRecycler(moviesWithGenres)
+    }
+
+    override fun onDetach() {
+        interactor.onDetach()
     }
 }

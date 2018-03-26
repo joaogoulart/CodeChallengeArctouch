@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Code Challenge</string>
     <string name="movie_and_genres">%s - %s</string>
+    <string name="error_language">The language can\'t be empty</string>
+    <string name="error_empity_movies">No movies found.</string>
+    <string name="error">Error</string>
+    <string name="no_movies">No movies found</string>
 </resources>

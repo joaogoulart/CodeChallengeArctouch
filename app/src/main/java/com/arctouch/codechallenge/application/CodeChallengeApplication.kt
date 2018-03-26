@@ -15,21 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class CodeChallengeApplication: Application() {
 
-    val api: TmdbApi = Retrofit.Builder()
-            .baseUrl(ApiConstants.API_URL)
-            .client(OkHttpClient.Builder().addInterceptor { interceptorChain ->
-                var request = interceptorChain.request()
-                val url = request.url().newBuilder()
-                        .addQueryParameter(ApiConstants.API_KEY_HEADER, ApiConstants.API_KEY)
-                        .addQueryParameter(ApiConstants.LANGUAGE_HEADER, ApiConstants.DEFAULT_LANGUAGE)
-                        .build()
-                request = request.newBuilder().url(url).build()
-                interceptorChain.proceed(request)
-            }.build())
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(TmdbApi::class.java)
+    val api: TmdbApi by lazy { buildApi() }
 
     companion object {
         lateinit var instance: CodeChallengeApplication
@@ -46,5 +32,21 @@ class CodeChallengeApplication: Application() {
         MultiDex.install(this)
     }
 
+    private fun buildApi(): TmdbApi
+            = Retrofit.Builder()
+            .baseUrl(ApiConstants.API_URL)
+            .client(OkHttpClient.Builder().addInterceptor { interceptorChain ->
+                var request = interceptorChain.request()
+                val url = request.url().newBuilder()
+                        .addQueryParameter(ApiConstants.API_KEY_HEADER, ApiConstants.API_KEY)
+                        .addQueryParameter(ApiConstants.LANGUAGE_HEADER, ApiConstants.DEFAULT_LANGUAGE)
+                        .build()
+                request = request.newBuilder().url(url).build()
+                interceptorChain.proceed(request)
+            }.build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+            .create(TmdbApi::class.java)
 
 }

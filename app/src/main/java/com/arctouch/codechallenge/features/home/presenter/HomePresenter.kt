@@ -6,4 +6,5 @@ package com.arctouch.codechallenge.features.home.presenter
 interface HomePresenter {
 
     fun onCreate()
+    fun onDetach()
 }

@@ -7,9 +7,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.features.home.presenter.HomePresenterImpl
-import com.arctouch.codechallenge.home.HomeAdapter
+import com.arctouch.codechallenge.features.home.adapter.HomeAdapter
 import com.arctouch.codechallenge.model.Movie
 import kotlinx.android.synthetic.main.home_activity.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.okButton
 
 class HomeActivity : AppCompatActivity(), ViewCallback {
 
@@ -32,5 +34,27 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
 
     override fun populateRecycler(moviesWithGenres: List<Movie>) {
         recyclerView.adapter = HomeAdapter(moviesWithGenres)
+    }
+
+    override fun showNoMovies() {
+        tNoMovies.visibility = View.VISIBLE
+    }
+
+    override fun hideNoMovies() {
+        tNoMovies.visibility = View.GONE
+    }
+
+    override fun showError(msg: String) {
+        alert {
+            titleResource = R.string.error
+            message = msg
+            okButton { finish() }
+            isCancelable = false
+        }.show()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        homePresenter.onDetach()
     }
 }
