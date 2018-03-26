@@ -8,7 +8,7 @@ import android.view.View
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.features.home.presenter.HomePresenterImpl
 import com.arctouch.codechallenge.features.home.adapter.HomeAdapter
-import com.arctouch.codechallenge.model.Movie
+import com.arctouch.codechallenge.features.home.model.Movie
 import kotlinx.android.synthetic.main.home_activity.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton

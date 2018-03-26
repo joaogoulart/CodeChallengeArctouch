@@ -6,7 +6,7 @@ import com.arctouch.codechallenge.data.Cache
 import com.arctouch.codechallenge.features.home.activity.ViewCallback
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractor
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractorImpl
-import com.arctouch.codechallenge.model.Movie
+import com.arctouch.codechallenge.features.home.model.Movie
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 

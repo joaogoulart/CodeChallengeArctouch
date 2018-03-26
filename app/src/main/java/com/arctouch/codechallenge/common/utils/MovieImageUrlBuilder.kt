@@ -1,4 +1,4 @@
-package com.arctouch.codechallenge.util
+package com.arctouch.codechallenge.common.utils
 
 import com.arctouch.codechallenge.common.constants.ApiConstants
 

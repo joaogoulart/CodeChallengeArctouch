@@ -1,7 +1,7 @@
 package com.arctouch.codechallenge.features.home.interactor
 
-import com.arctouch.codechallenge.model.Movie
-import com.arctouch.codechallenge.model.UpcomingMoviesResponse
+import com.arctouch.codechallenge.features.home.model.Movie
+import com.arctouch.codechallenge.features.home.model.UpcomingMoviesResponse
 import io.reactivex.Observable
 
 /**

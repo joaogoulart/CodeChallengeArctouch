@@ -5,7 +5,7 @@ import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.common.utils.getString
 import com.arctouch.codechallenge.data.Cache
 import com.arctouch.codechallenge.features.home.service.http.HomeHttpService
-import com.arctouch.codechallenge.model.UpcomingMoviesResponse
+import com.arctouch.codechallenge.features.home.model.UpcomingMoviesResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

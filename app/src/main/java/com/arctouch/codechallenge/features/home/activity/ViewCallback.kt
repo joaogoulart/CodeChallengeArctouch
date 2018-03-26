@@ -1,6 +1,6 @@
 package com.arctouch.codechallenge.features.home.activity
 
-import com.arctouch.codechallenge.model.Movie
+import com.arctouch.codechallenge.features.home.model.Movie
 
 interface ViewCallback {
     fun setUpRecycler()
