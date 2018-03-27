@@ -9,4 +9,8 @@
     <string name="all_movies_loaded">All movies loaded.</string>
     <string name="search">Search</string>
     <string name="no_movies_found">No movies found</string>
+    <string name="transition_image">transition_imagem</string>
+    <string name="sinopse">Synopsis</string>
+    <string name="release_date">Release Date</string>
+    <string name="genres">Genres</string>
 </resources>

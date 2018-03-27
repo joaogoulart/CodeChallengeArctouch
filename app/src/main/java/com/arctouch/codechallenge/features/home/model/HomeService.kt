@@ -48,7 +48,7 @@ class HomeService {
         }
 
         @Throws
-        fun upcomingMovies(genres: List<Genre>, page: Long, defaultLanguage: String): MutableList<Movie> {
+        fun upcomingMovies(genres: List<Genre>, page: Long): MutableList<Movie> {
             val execute = CodeChallengeApplication.instance.api.upcomingMovies(page).execute()
             val upcomingMoviesResponse = execute.body()
             upcomingMoviesResponse?.let {

@@ -3,7 +3,6 @@ package com.arctouch.codechallenge.features.home.interactor
 import android.support.v7.widget.SearchView
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.application.CodeChallengeApplication
-import com.arctouch.codechallenge.common.constants.ApiConstants
 import com.arctouch.codechallenge.common.utils.RxSearchView
 import com.arctouch.codechallenge.common.utils.getString
 import com.arctouch.codechallenge.features.home.model.Genre
@@ -23,7 +22,7 @@ class HomeInteractorImpl: HomeInteractor {
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var loadedMovies = false
 
-    override fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: HomeInteractor.UpcomingMoviesListener, refresh: Boolean) {
+    override fun getUpcomingMovies(currentPage: Long, listener: HomeInteractor.UpcomingMoviesListener, refresh: Boolean) {
 
         val appInstance = CodeChallengeApplication.instance
         val fromCache = Observable.fromCallable { appInstance.genres }
@@ -34,7 +33,7 @@ class HomeInteractorImpl: HomeInteractor {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(onNext = {
                     if (it.isNotEmpty() && (!loadedMovies || refresh)) {
-                        getMovies(it, currentPage, defaultLanguage, listener)
+                        getMovies(it, currentPage, listener)
                         loadedMovies = true
                         return@subscribeBy
                     }
@@ -71,8 +70,8 @@ class HomeInteractorImpl: HomeInteractor {
                 }))
     }
 
-    private fun getMovies(genres: List<Genre>, page: Long, defaultLanguage: String, listener: HomeInteractor.UpcomingMoviesListener, loadMore: Boolean = false) {
-        compositeDisposable.add(Observable.fromCallable { HomeService.upcomingMovies(genres, page, defaultLanguage) }
+    private fun getMovies(genres: List<Genre>, page: Long, listener: HomeInteractor.UpcomingMoviesListener, loadMore: Boolean = false) {
+        compositeDisposable.add(Observable.fromCallable { HomeService.upcomingMovies(genres, page) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(onNext = {
@@ -94,9 +93,9 @@ class HomeInteractorImpl: HomeInteractor {
                 }))
     }
 
-    override fun loadMore(listener: HomeInteractor.UpcomingMoviesListener, defaultRegion: String, currentPage: Long) {
+    override fun loadMore(listener: HomeInteractor.UpcomingMoviesListener, currentPage: Long) {
         val genres = CodeChallengeApplication.instance.genres
-        getMovies(genres, currentPage, ApiConstants.DEFAULT_REGION, listener, true)
+        getMovies(genres, currentPage, listener, true)
     }
 
     override fun onDetach() {

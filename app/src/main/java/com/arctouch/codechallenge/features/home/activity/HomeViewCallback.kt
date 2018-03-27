@@ -2,7 +2,7 @@ package com.arctouch.codechallenge.features.home.activity
 
 import com.arctouch.codechallenge.features.home.model.Movie
 
-interface ViewCallback {
+interface HomeViewCallback {
     fun setUpRecycler()
     fun hideProgress()
     fun updateRecycler(moviesWithGenres: MutableList<Movie>)

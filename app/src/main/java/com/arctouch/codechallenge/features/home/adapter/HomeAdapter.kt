@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.common.utils.MovieImageUrlBuilder
@@ -13,7 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.movie_item.view.*
 
-class HomeAdapter(private val movies: MutableList<Movie>, val onLoadMoreData:(ProgressBar) -> Unit, val onClickMovie:(Movie) -> Unit) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
+class HomeAdapter(private val movies: MutableList<Movie>, val onLoadMoreData:(ProgressBar) -> Unit, val onClickMovie:(Movie, ImageView) -> Unit) : RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
 
     private var isLoading = false
     var isMoreDataAvailable = true
@@ -23,19 +24,16 @@ class HomeAdapter(private val movies: MutableList<Movie>, val onLoadMoreData:(Pr
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        private val movieImageUrlBuilder = MovieImageUrlBuilder()
-
-        fun bind(movie: Movie, onClickMovie:(Movie) -> Unit) {
+        fun bind(movie: Movie, onClickMovie:(Movie, ImageView) -> Unit) {
             itemView.cardViewMovie.setOnClickListener {
-                onClickMovie(movie)
+                onClickMovie(movie, itemView.posterImageView)
             }
             itemView.titleTextView.text = movie.title
             itemView.genresTextView.text = movie.genres?.joinToString(separator = ", ") { it.name }
             itemView.releaseDateTextView.text = movie.releaseDate
 
             Glide.with(itemView)
-                .load(movie.posterPath?.let { movieImageUrlBuilder.buildPosterUrl(it) })
+                .load(movie.posterPath?.let { MovieImageUrlBuilder.buildPosterUrl(it) })
                 .apply(RequestOptions().placeholder(R.drawable.ic_image_placeholder))
                 .into(itemView.posterImageView)
         }

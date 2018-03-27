@@ -3,31 +3,31 @@ package com.arctouch.codechallenge.features.home.presenter
 import android.os.Bundle
 import android.support.v7.widget.SearchView
 import com.arctouch.codechallenge.R
-import com.arctouch.codechallenge.common.constants.ApiConstants
 import com.arctouch.codechallenge.common.constants.BundleConstants
 import com.arctouch.codechallenge.common.utils.getString
-import com.arctouch.codechallenge.features.home.activity.ViewCallback
+import com.arctouch.codechallenge.features.home.activity.HomeViewCallback
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractor
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractorImpl
 import com.arctouch.codechallenge.features.home.model.Movie
 
+@Suppress("UNCHECKED_CAST")
 /**
  * Created by Joao on 25/03/2018.
  */
-class HomePresenterImpl(private val viewCallback: ViewCallback, private val interactor: HomeInteractor = HomeInteractorImpl()): HomePresenter, HomeInteractor.UpcomingMoviesListener {
+class HomePresenterImpl(private val homeViewCallback: HomeViewCallback, private val interactor: HomeInteractor = HomeInteractorImpl()): HomePresenter, HomeInteractor.UpcomingMoviesListener {
 
     private var movieList: MutableList<Movie> = mutableListOf()
     private var currentPage = 1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        viewCallback.setUpRecycler()
+        homeViewCallback.setUpRecycler()
         if (savedInstanceState != null) {
             val movieList = (savedInstanceState.getSerializable(BundleConstants.MOVIES_KEY) as? Array<Movie>)?.toMutableList() ?: mutableListOf()
             if (movieList.isNotEmpty()) {
                 currentPage = savedInstanceState.getLong(BundleConstants.CURRENT_PAGE_KEY)
                 val firstItemVisiblePosition = savedInstanceState.getInt(BundleConstants.VISIBLE_ITEM_POSITION)
                 onUpcomingMoviesSuccess(movieList)
-                viewCallback.scrollToPosition(firstItemVisiblePosition)
+                homeViewCallback.scrollToPosition(firstItemVisiblePosition)
                 return
             }
         }
@@ -39,17 +39,17 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
     }
 
     override fun onSearchSucess(listmoviesSearch: MutableList<Movie>) {
-        viewCallback.setAdapterAbleToPaginate(false)
-        viewCallback.updateRecycler(if (listmoviesSearch.isNotEmpty()) listmoviesSearch else {
-            viewCallback.setAdapterAbleToPaginate(true)
+        homeViewCallback.setAdapterAbleToPaginate(false)
+        homeViewCallback.updateRecycler(if (listmoviesSearch.isNotEmpty()) listmoviesSearch else {
+            homeViewCallback.setAdapterAbleToPaginate(true)
             movieList
         })
     }
 
     override fun onSearchEmpity() {
-        viewCallback.showEmpitySearch(getString(R.string.no_movies_found), {
-            viewCallback.updateRecycler(movieList)
-            viewCallback.setAdapterAbleToPaginate(true)
+        homeViewCallback.showEmpitySearch(getString(R.string.no_movies_found), {
+            homeViewCallback.updateRecycler(movieList)
+            homeViewCallback.setAdapterAbleToPaginate(true)
         })
     }
 
@@ -60,7 +60,7 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
     }
 
     fun loadMovies(refresh: Boolean = false) {
-        interactor.getUpcomingMovies(currentPage, ApiConstants.DEFAULT_REGION, this, refresh)
+        interactor.getUpcomingMovies(currentPage, this, refresh)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -69,26 +69,26 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
     }
 
     override fun onUpcomingMoviesError(code: Int, msg: String) {
-        viewCallback.hideProgress()
+        homeViewCallback.hideProgress()
         if (code == 1) {
-            viewCallback.hideRecycler()
-            viewCallback.showNoMovies()
+            homeViewCallback.hideRecycler()
+            homeViewCallback.showNoMovies()
         } else if (code == 2) {
-            viewCallback.showErrorWithCallback(msg)
+            homeViewCallback.showErrorWithCallback(msg)
         }
 
-        viewCallback.showError(msg)
+        homeViewCallback.showError(msg)
     }
 
     override fun onUpcomingMoviesSuccess(moviesWithGenres: MutableList<Movie>) {
-        viewCallback.hideProgress()
-        viewCallback.hideNoMovies()
+        homeViewCallback.hideProgress()
+        homeViewCallback.hideNoMovies()
         updateMoviesList(moviesWithGenres)
     }
 
     override fun loadMore() {
         currentPage++
-        interactor.loadMore(this, ApiConstants.DEFAULT_REGION, currentPage)
+        interactor.loadMore(this, currentPage)
     }
 
     override fun onDetach() {
@@ -97,7 +97,7 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
 
     override fun onLoadMoreMovies(moviesWithGenres: MutableList<Movie>) {
         if (moviesWithGenres.isEmpty()) {
-            viewCallback.allMoviesLoaded()
+            homeViewCallback.allMoviesLoaded()
             return
         }
 
@@ -106,6 +106,6 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
 
     private fun updateMoviesList(moviesWithGenres: MutableList<Movie>, fromLoadMore:Boolean = false) {
         movieList.addAll(moviesWithGenres)
-        viewCallback.updateRecycler(if (!fromLoadMore) moviesWithGenres else movieList)
+        homeViewCallback.updateRecycler(if (!fromLoadMore) moviesWithGenres else movieList)
     }
 }

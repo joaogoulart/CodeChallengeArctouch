@@ -1,24 +1,29 @@
 package com.arctouch.codechallenge.features.home.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.ActivityOptionsCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.common.constants.BundleConstants
+import com.arctouch.codechallenge.features.detail.activity.DetailsActivity
 import com.arctouch.codechallenge.features.home.adapter.HomeAdapter
 import com.arctouch.codechallenge.features.home.model.Movie
 import com.arctouch.codechallenge.features.home.presenter.HomePresenterImpl
 import kotlinx.android.synthetic.main.home_activity.*
+import kotlinx.android.synthetic.main.include_toolbar.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
 import org.jetbrains.anko.toast
 
-class HomeActivity : AppCompatActivity(), ViewCallback {
+class HomeActivity : AppCompatActivity(), HomeViewCallback {
 
     private val homePresenter by lazy { HomePresenterImpl(this) }
     private var adapter: HomeAdapter? = null
@@ -29,7 +34,8 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_activity)
-        swipeRefresh.setOnRefreshListener {
+        setSupportActionBar(toolbar)
+        swipeRefreshLayout.setOnRefreshListener {
             adapter?.isMoreDataAvailable = true
             homePresenter.onRefresh()
         }
@@ -71,20 +77,25 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
             adapter = HomeAdapter(moviesWithGenres, {
                 currentLoadMoreProgress = it
                 homePresenter.loadMore()
-            }, {
-                onClickItem(it)
+            }, { movie, image ->
+                onClickItem(movie, image)
             })
             recyclerView.adapter = adapter
         } else {
             currentLoadMoreProgress?.visibility = View.GONE
-            swipeRefresh.isRefreshing = false
+            swipeRefreshLayout.isRefreshing = false
             adapter?.handleItens(moviesWithGenres)
         }
         recyclerView.visibility = View.VISIBLE
     }
 
-    private fun onClickItem(movie: Movie) {
-
+    private fun onClickItem(movie: Movie, image: ImageView) {
+        val intent = Intent(this, DetailsActivity::class.java)
+        val bundle = Bundle()
+        bundle.putParcelable(BundleConstants.MOVIE_KEY, movie)
+        intent.putExtras(bundle)
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, image, getString(R.string.transition_image))
+        startActivity(intent, options.toBundle())
     }
 
     override fun allMoviesLoaded() {

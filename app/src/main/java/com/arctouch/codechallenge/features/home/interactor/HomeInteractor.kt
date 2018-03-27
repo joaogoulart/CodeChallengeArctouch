@@ -16,9 +16,9 @@ interface HomeInteractor {
         fun onSearchEmpity()
     }
 
-    fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: UpcomingMoviesListener, refresh: Boolean = false)
+    fun getUpcomingMovies(currentPage: Long, listener: UpcomingMoviesListener, refresh: Boolean = false)
     fun onDetach()
-    fun loadMore(listener: UpcomingMoviesListener, defaultRegion: String, currentPage: Long)
+    fun loadMore(listener: UpcomingMoviesListener, currentPage: Long)
     fun onSearchMovie(searchView: SearchView, listener: HomeInteractor.UpcomingMoviesListener)
     fun searchFromServer(query: String, listener: HomeInteractor.UpcomingMoviesListener)
 
