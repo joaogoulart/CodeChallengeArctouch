@@ -146,8 +146,8 @@ class HomeActivity : AppCompatActivity(), HomeViewCallback {
         }.show()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         homePresenter.onDetach()
     }
 }
