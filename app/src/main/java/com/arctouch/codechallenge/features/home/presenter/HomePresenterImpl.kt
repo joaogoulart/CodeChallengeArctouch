@@ -2,6 +2,7 @@ package com.arctouch.codechallenge.features.home.presenter
 
 import android.os.Bundle
 import android.support.v7.widget.SearchView
+import android.widget.ImageView
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.common.constants.BundleConstants
 import com.arctouch.codechallenge.common.utils.getString
@@ -14,7 +15,7 @@ import com.arctouch.codechallenge.features.home.model.Movie
 /**
  * Created by Joao on 25/03/2018.
  */
-class HomePresenterImpl(private val homeViewCallback: HomeViewCallback, private val interactor: HomeInteractor = HomeInteractorImpl()): HomePresenter, HomeInteractor.UpcomingMoviesListener {
+open class HomePresenterImpl(private val homeViewCallback: HomeViewCallback, private val interactor: HomeInteractor = HomeInteractorImpl()): HomePresenter, HomeInteractor.UpcomingMoviesListener {
 
     private var movieList: MutableList<Movie> = mutableListOf()
     private var currentPage = 1L
@@ -51,6 +52,10 @@ class HomePresenterImpl(private val homeViewCallback: HomeViewCallback, private 
             homeViewCallback.updateRecycler(movieList)
             homeViewCallback.setAdapterAbleToPaginate(true)
         })
+    }
+
+    override fun onClickItem(movie: Movie, image: ImageView) {
+        homeViewCallback.showDetailsActivity(movie, image)
     }
 
     override fun onRefresh() {
@@ -104,7 +109,7 @@ class HomePresenterImpl(private val homeViewCallback: HomeViewCallback, private 
         updateMoviesList(moviesWithGenres, true)
     }
 
-    private fun updateMoviesList(moviesWithGenres: MutableList<Movie>, fromLoadMore:Boolean = false) {
+    override fun updateMoviesList(moviesWithGenres: MutableList<Movie>, fromLoadMore:Boolean) {
         movieList.addAll(moviesWithGenres)
         homeViewCallback.updateRecycler(if (!fromLoadMore) moviesWithGenres else movieList)
     }

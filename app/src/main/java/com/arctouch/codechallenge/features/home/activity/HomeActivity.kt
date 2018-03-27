@@ -78,7 +78,7 @@ class HomeActivity : AppCompatActivity(), HomeViewCallback {
                 currentLoadMoreProgress = it
                 homePresenter.loadMore()
             }, { movie, image ->
-                onClickItem(movie, image)
+                homePresenter.onClickItem(movie, image)
             })
             recyclerView.adapter = adapter
         } else {
@@ -89,7 +89,7 @@ class HomeActivity : AppCompatActivity(), HomeViewCallback {
         recyclerView.visibility = View.VISIBLE
     }
 
-    private fun onClickItem(movie: Movie, image: ImageView) {
+    override fun showDetailsActivity(movie: Movie, image: ImageView) {
         val intent = Intent(this, DetailsActivity::class.java)
         val bundle = Bundle()
         bundle.putParcelable(BundleConstants.MOVIE_KEY, movie)

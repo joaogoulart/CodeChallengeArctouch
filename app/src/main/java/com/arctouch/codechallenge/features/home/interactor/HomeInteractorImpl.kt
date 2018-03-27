@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Joao on 25/03/2018.
  */
-class HomeInteractorImpl: HomeInteractor {
+open class HomeInteractorImpl: HomeInteractor {
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var loadedMovies = false
 
