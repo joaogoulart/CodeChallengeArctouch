@@ -4,7 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
 import com.arctouch.codechallenge.common.constants.ApiConstants
-import com.arctouch.codechallenge.features.home.service.http.HomeHttpService
+import com.arctouch.codechallenge.features.home.model.Genre
+import com.arctouch.codechallenge.features.home.model.HomeService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -15,7 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class CodeChallengeApplication: Application() {
 
-    val api: HomeHttpService.TmdbApi by lazy { buildApi() }
+    val api: HomeService.TmdbApi by lazy { buildApi() }
+    var genres = listOf<Genre>()
 
     companion object {
         lateinit var instance: CodeChallengeApplication
@@ -32,7 +34,7 @@ class CodeChallengeApplication: Application() {
         MultiDex.install(this)
     }
 
-    private fun buildApi(): HomeHttpService.TmdbApi
+    private fun buildApi(): HomeService.TmdbApi
             = Retrofit.Builder()
             .baseUrl(ApiConstants.API_URL)
             .client(OkHttpClient.Builder().addInterceptor { interceptorChain ->
@@ -47,6 +49,6 @@ class CodeChallengeApplication: Application() {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-            .create(HomeHttpService.TmdbApi::class.java)
+            .create(HomeService.TmdbApi::class.java)
 
 }

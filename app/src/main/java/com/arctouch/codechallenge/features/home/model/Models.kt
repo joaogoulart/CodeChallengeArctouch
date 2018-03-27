@@ -1,10 +1,13 @@
 package com.arctouch.codechallenge.features.home.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 data class GenreResponse(val genres: List<Genre>)
 
-data class Genre(val id: Int, val name: String)
+@Parcelize
+data class Genre(val id: Int, val name: String): Parcelable
 
 data class UpcomingMoviesResponse(
         val page: Int,
@@ -13,6 +16,7 @@ data class UpcomingMoviesResponse(
         @SerializedName("total_results") val totalResults: Int
 )
 
+@Parcelize
 data class Movie(
         val id: Int,
         val title: String,
@@ -22,4 +26,4 @@ data class Movie(
         @SerializedName("poster_path") val posterPath: String?,
         @SerializedName("backdrop_path") val backdropPath: String?,
         @SerializedName("release_date") val releaseDate: String?
-)
+): Parcelable

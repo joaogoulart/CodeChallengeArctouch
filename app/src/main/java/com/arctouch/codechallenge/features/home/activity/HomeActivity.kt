@@ -3,12 +3,11 @@ package com.arctouch.codechallenge.features.home.activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.arctouch.codechallenge.R
-import com.arctouch.codechallenge.features.home.presenter.HomePresenterImpl
 import com.arctouch.codechallenge.features.home.adapter.HomeAdapter
 import com.arctouch.codechallenge.features.home.model.Movie
+import com.arctouch.codechallenge.features.home.presenter.HomePresenterImpl
 import kotlinx.android.synthetic.main.home_activity.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.okButton
@@ -24,7 +23,6 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
     }
 
     override fun setUpRecycler() {
-        recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.itemAnimator = DefaultItemAnimator()
     }
 
@@ -33,6 +31,7 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
     }
 
     override fun populateRecycler(moviesWithGenres: List<Movie>) {
+        recyclerView.visibility = View.VISIBLE
         recyclerView.adapter = HomeAdapter(moviesWithGenres)
     }
 
@@ -42,6 +41,10 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
 
     override fun hideNoMovies() {
         tNoMovies.visibility = View.GONE
+    }
+
+    override fun hideRecycler() {
+        recyclerView.visibility = View.GONE
     }
 
     override fun showError(msg: String) {

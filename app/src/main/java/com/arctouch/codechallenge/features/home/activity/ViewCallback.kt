@@ -9,4 +9,5 @@ interface ViewCallback {
     fun showNoMovies()
     fun showError(msg: String)
     fun hideNoMovies()
+    fun hideRecycler()
 }
