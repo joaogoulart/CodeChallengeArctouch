@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Code Challenge</string>
     <string name="movie_and_genres">%s - %s</string>
+    <string name="error_language">The language can\'t be empty</string>
+    <string name="error_empity_movies">No movies found.</string>
+    <string name="error">Error</string>
+    <string name="no_movies">No movies found</string>
+    <string name="error_empity_genres">No genres where found, try again latter</string>
+    <string name="all_movies_loaded">All movies loaded.</string>
+    <string name="search">Search</string>
+    <string name="no_movies_found">No movies found</string>
+    <string name="transition_image">transition_imagem</string>
+    <string name="sinopse">Synopsis</string>
+    <string name="release_date">Release Date</string>
+    <string name="genres">Genres</string>
 </resources>
