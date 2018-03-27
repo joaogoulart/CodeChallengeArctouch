@@ -13,4 +13,6 @@ interface ViewCallback {
     fun allMoviesLoaded()
     fun scrollToPosition(firstItemVisiblePosition: Int)
     fun showErrorWithCallback(msg: String)
+    fun showEmpitySearch(msg: String, callback: () -> Unit)
+    fun setAdapterAbleToPaginate(ableToPaginate: Boolean)
 }

@@ -2,8 +2,10 @@ package com.arctouch.codechallenge.features.home.presenter
 
 import android.os.Bundle
 import android.support.v7.widget.SearchView
+import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.common.constants.ApiConstants
 import com.arctouch.codechallenge.common.constants.BundleConstants
+import com.arctouch.codechallenge.common.utils.getString
 import com.arctouch.codechallenge.features.home.activity.ViewCallback
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractor
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractorImpl
@@ -33,17 +35,32 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
     }
 
     override fun onSearchMovie(searchView: SearchView) {
-        interactor.onSearchMovie(searchView)
+        interactor.onSearchMovie(searchView, this)
+    }
+
+    override fun onSearchSucess(listmoviesSearch: MutableList<Movie>) {
+        viewCallback.setAdapterAbleToPaginate(false)
+        viewCallback.updateRecycler(if (listmoviesSearch.isNotEmpty()) listmoviesSearch else {
+            viewCallback.setAdapterAbleToPaginate(true)
+            movieList
+        })
+    }
+
+    override fun onSearchEmpity() {
+        viewCallback.showEmpitySearch(getString(R.string.no_movies_found), {
+            viewCallback.updateRecycler(movieList)
+            viewCallback.setAdapterAbleToPaginate(true)
+        })
     }
 
     override fun onRefresh() {
         currentPage = 1L
         movieList = mutableListOf()
-        loadMovies()
+        loadMovies(true)
     }
 
-    fun loadMovies() {
-        interactor.getUpcomingMovies(currentPage, ApiConstants.DEFAULT_REGION, this)
+    fun loadMovies(refresh: Boolean = false) {
+        interactor.getUpcomingMovies(currentPage, ApiConstants.DEFAULT_REGION, this, refresh)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

@@ -25,6 +25,9 @@ class HomeService {
 //                           @Query("region") region: String
         ): Call<UpcomingMoviesResponse>
 
+        @GET("search/movie")
+        fun searchMovie(@Query("query") query: String): Call<UpcomingMoviesResponse>
+
         @GET("movie/{id}")
         fun movie(
                 @Path("id") id: Long
@@ -59,6 +62,24 @@ class HomeService {
                 return moviesWithGenres.toMutableList()
             }
             throw MoviesException(1, getString(R.string.error_empity_movies))
+        }
+
+        @Throws
+        fun searchMovie(query: String): MutableList<Movie> {
+            val execute = CodeChallengeApplication.instance.api.searchMovie(query).execute()
+            val upcomingMoviesResponse = execute.body()
+            upcomingMoviesResponse?.let {
+                if (it.results.isEmpty()) {
+                    throw MoviesException(3, getString(R.string.error_empity_movies))
+                }
+                val moviesWithGenres = it.results.map { movie ->
+                    movie.copy(genres = CodeChallengeApplication.instance.genres.filter { movie.genreIds?.contains(it.id) == true })
+                }
+
+                return moviesWithGenres.toMutableList()
+            }
+
+            return mutableListOf()
         }
     }
 }

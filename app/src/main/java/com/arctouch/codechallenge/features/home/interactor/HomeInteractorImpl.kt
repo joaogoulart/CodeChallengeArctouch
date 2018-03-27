@@ -4,6 +4,7 @@ import android.support.v7.widget.SearchView
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.application.CodeChallengeApplication
 import com.arctouch.codechallenge.common.constants.ApiConstants
+import com.arctouch.codechallenge.common.utils.RxSearchView
 import com.arctouch.codechallenge.common.utils.getString
 import com.arctouch.codechallenge.features.home.model.Genre
 import com.arctouch.codechallenge.features.home.model.HomeService
@@ -13,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Joao on 25/03/2018.
@@ -21,11 +23,7 @@ class HomeInteractorImpl: HomeInteractor {
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var loadedMovies = false
 
-    override fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: HomeInteractor.UpcomingMoviesListener) {
-        if (defaultLanguage.isEmpty()) {
-            listener.onUpcomingMoviesError(msg = getString(R.string.error_language))
-            return
-        }
+    override fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: HomeInteractor.UpcomingMoviesListener, refresh: Boolean) {
 
         val appInstance = CodeChallengeApplication.instance
         val fromCache = Observable.fromCallable { appInstance.genres }
@@ -35,7 +33,7 @@ class HomeInteractorImpl: HomeInteractor {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(onNext = {
-                    if (it.isNotEmpty() && !loadedMovies) {
+                    if (it.isNotEmpty() && (!loadedMovies || refresh)) {
                         getMovies(it, currentPage, defaultLanguage, listener)
                         loadedMovies = true
                         return@subscribeBy
@@ -50,8 +48,27 @@ class HomeInteractorImpl: HomeInteractor {
                 }))
     }
 
-    override fun onSearchMovie(searchView: SearchView) {
+    override fun onSearchMovie(searchView: SearchView, listener: HomeInteractor.UpcomingMoviesListener) {
+        compositeDisposable.add(RxSearchView.fromSearchView(searchView)
+                .debounce(400L, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(onNext = {
+                    if (it.isEmpty()) {
+                        listener.onSearchSucess(mutableListOf())
+                    }
+                    searchFromServer(it, listener)
+                }))
+    }
 
+    override fun searchFromServer(query: String, listener: HomeInteractor.UpcomingMoviesListener) {
+        compositeDisposable.add(Observable.fromCallable { HomeService.searchMovie(query) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(onNext = {
+                    listener.onSearchSucess(it)
+                }, onError = {
+                    listener.onSearchEmpity()
+                }))
     }
 
     private fun getMovies(genres: List<Genre>, page: Long, defaultLanguage: String, listener: HomeInteractor.UpcomingMoviesListener, loadMore: Boolean = false) {

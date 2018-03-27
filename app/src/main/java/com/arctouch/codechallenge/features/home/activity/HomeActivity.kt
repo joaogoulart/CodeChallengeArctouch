@@ -22,19 +22,23 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
 
     private val homePresenter by lazy { HomePresenterImpl(this) }
     private var adapter: HomeAdapter? = null
-    private lateinit var currentLoadMoreProgress: ProgressBar
+    private var currentLoadMoreProgress: ProgressBar? = null
+    private var searchView: SearchView? = null
     private val linearLayoutManager: LinearLayoutManager by lazy { LinearLayoutManager(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_activity)
-        swipeRefresh.setOnRefreshListener { homePresenter.onRefresh() }
+        swipeRefresh.setOnRefreshListener {
+            adapter?.isMoreDataAvailable = true
+            homePresenter.onRefresh()
+        }
         homePresenter.onCreate(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        val findFirstCompletelyVisibleItemPosition = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
+        val findFirstCompletelyVisibleItemPosition = if (searchView?.isActivated == true) 0 else linearLayoutManager.findFirstCompletelyVisibleItemPosition()
         outState?.putInt(BundleConstants.VISIBLE_ITEM_POSITION, findFirstCompletelyVisibleItemPosition)
         homePresenter.onSaveInstanceState(outState)
     }
@@ -72,20 +76,33 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
             })
             recyclerView.adapter = adapter
         } else {
-            currentLoadMoreProgress.visibility = View.GONE
+            currentLoadMoreProgress?.visibility = View.GONE
+            swipeRefresh.isRefreshing = false
             adapter?.handleItens(moviesWithGenres)
         }
         recyclerView.visibility = View.VISIBLE
     }
 
+    private fun onClickItem(movie: Movie) {
+
+    }
+
     override fun allMoviesLoaded() {
-        currentLoadMoreProgress.visibility = View.GONE
+        currentLoadMoreProgress?.visibility = View.GONE
         adapter?.isMoreDataAvailable = false
         toast(R.string.all_movies_loaded)
     }
 
-    private fun onClickItem(movie: Movie) {
+    override fun showEmpitySearch(msg: String, callback: () -> Unit) {
+        alert {
+            title = "Alert"
+            message = msg
+            okButton { callback() }
+        }.show()
+    }
 
+    override fun setAdapterAbleToPaginate(ableToPaginate: Boolean) {
+        adapter?.isMoreDataAvailable = ableToPaginate
     }
 
     override fun showNoMovies() {

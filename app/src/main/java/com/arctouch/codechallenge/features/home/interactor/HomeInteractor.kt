@@ -9,14 +9,17 @@ import com.arctouch.codechallenge.features.home.model.Movie
 interface HomeInteractor {
 
     interface UpcomingMoviesListener {
-        fun onUpcomingMoviesError(code: Int = 0, msg: String)
+        fun onUpcomingMoviesError(code: Int = 0, msg: String = "")
         fun onUpcomingMoviesSuccess(moviesWithGenres: MutableList<Movie>)
         fun onLoadMoreMovies(moviesWithGenres: MutableList<Movie>)
+        fun onSearchSucess(listmoviesSearch: MutableList<Movie>)
+        fun onSearchEmpity()
     }
 
-    fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: UpcomingMoviesListener)
+    fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: UpcomingMoviesListener, refresh: Boolean = false)
     fun onDetach()
     fun loadMore(listener: UpcomingMoviesListener, defaultRegion: String, currentPage: Long)
-    fun onSearchMovie(searchView: SearchView)
+    fun onSearchMovie(searchView: SearchView, listener: HomeInteractor.UpcomingMoviesListener)
+    fun searchFromServer(query: String, listener: HomeInteractor.UpcomingMoviesListener)
 
 }
