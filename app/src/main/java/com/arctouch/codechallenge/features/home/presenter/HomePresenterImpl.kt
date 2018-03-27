@@ -1,6 +1,9 @@
 package com.arctouch.codechallenge.features.home.presenter
 
+import android.os.Bundle
+import android.support.v7.widget.SearchView
 import com.arctouch.codechallenge.common.constants.ApiConstants
+import com.arctouch.codechallenge.common.constants.BundleConstants
 import com.arctouch.codechallenge.features.home.activity.ViewCallback
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractor
 import com.arctouch.codechallenge.features.home.interactor.HomeInteractorImpl
@@ -14,9 +17,38 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
     private var movieList: MutableList<Movie> = mutableListOf()
     private var currentPage = 1L
 
-    override fun onCreate() {
+    override fun onCreate(savedInstanceState: Bundle?) {
         viewCallback.setUpRecycler()
+        if (savedInstanceState != null) {
+            val movieList = (savedInstanceState.getSerializable(BundleConstants.MOVIES_KEY) as? Array<Movie>)?.toMutableList() ?: mutableListOf()
+            if (movieList.isNotEmpty()) {
+                currentPage = savedInstanceState.getLong(BundleConstants.CURRENT_PAGE_KEY)
+                val firstItemVisiblePosition = savedInstanceState.getInt(BundleConstants.VISIBLE_ITEM_POSITION)
+                onUpcomingMoviesSuccess(movieList)
+                viewCallback.scrollToPosition(firstItemVisiblePosition)
+                return
+            }
+        }
+        loadMovies()
+    }
+
+    override fun onSearchMovie(searchView: SearchView) {
+        interactor.onSearchMovie(searchView)
+    }
+
+    override fun onRefresh() {
+        currentPage = 1L
+        movieList = mutableListOf()
+        loadMovies()
+    }
+
+    fun loadMovies() {
         interactor.getUpcomingMovies(currentPage, ApiConstants.DEFAULT_REGION, this)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putSerializable(BundleConstants.MOVIES_KEY, movieList.toTypedArray())
+        outState?.putLong(BundleConstants.CURRENT_PAGE_KEY, currentPage)
     }
 
     override fun onUpcomingMoviesError(code: Int, msg: String) {
@@ -24,7 +56,8 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
         if (code == 1) {
             viewCallback.hideRecycler()
             viewCallback.showNoMovies()
-            return
+        } else if (code == 2) {
+            viewCallback.showErrorWithCallback(msg)
         }
 
         viewCallback.showError(msg)
@@ -51,11 +84,11 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
             return
         }
 
-        updateMoviesList(moviesWithGenres)
+        updateMoviesList(moviesWithGenres, true)
     }
 
-    private fun updateMoviesList(moviesWithGenres: MutableList<Movie>) {
+    private fun updateMoviesList(moviesWithGenres: MutableList<Movie>, fromLoadMore:Boolean = false) {
         movieList.addAll(moviesWithGenres)
-        viewCallback.updateRecycler(movieList)
+        viewCallback.updateRecycler(if (!fromLoadMore) moviesWithGenres else movieList)
     }
 }

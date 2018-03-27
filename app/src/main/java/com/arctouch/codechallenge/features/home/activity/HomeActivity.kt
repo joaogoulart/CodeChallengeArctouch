@@ -3,9 +3,13 @@ package com.arctouch.codechallenge.features.home.activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.SearchView
+import android.view.Menu
 import android.view.View
 import android.widget.ProgressBar
 import com.arctouch.codechallenge.R
+import com.arctouch.codechallenge.common.constants.BundleConstants
 import com.arctouch.codechallenge.features.home.adapter.HomeAdapter
 import com.arctouch.codechallenge.features.home.model.Movie
 import com.arctouch.codechallenge.features.home.presenter.HomePresenterImpl
@@ -19,15 +23,39 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
     private val homePresenter by lazy { HomePresenterImpl(this) }
     private var adapter: HomeAdapter? = null
     private lateinit var currentLoadMoreProgress: ProgressBar
+    private val linearLayoutManager: LinearLayoutManager by lazy { LinearLayoutManager(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.home_activity)
-        homePresenter.onCreate()
+        swipeRefresh.setOnRefreshListener { homePresenter.onRefresh() }
+        homePresenter.onCreate(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        val findFirstCompletelyVisibleItemPosition = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
+        outState?.putInt(BundleConstants.VISIBLE_ITEM_POSITION, findFirstCompletelyVisibleItemPosition)
+        homePresenter.onSaveInstanceState(outState)
     }
 
     override fun setUpRecycler() {
         recyclerView.itemAnimator = DefaultItemAnimator()
+        recyclerView.layoutManager = linearLayoutManager
+    }
+
+    override fun scrollToPosition(firstItemVisiblePosition: Int) {
+        recyclerView.scrollToPosition(firstItemVisiblePosition)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+
+        val menuSearch = menu?.findItem(R.id.search)
+        val searchView = menuSearch?.actionView as SearchView
+        homePresenter.onSearchMovie(searchView)
+
+        return true
     }
 
     override fun hideProgress() {
@@ -77,6 +105,15 @@ class HomeActivity : AppCompatActivity(), ViewCallback {
             titleResource = R.string.error
             message = msg
             okButton { finish() }
+            isCancelable = false
+        }.show()
+    }
+
+    override fun showErrorWithCallback(msg: String) {
+        alert {
+            titleResource = R.string.error
+            message = msg
+            okButton { homePresenter.loadMovies() }
             isCancelable = false
         }.show()
     }

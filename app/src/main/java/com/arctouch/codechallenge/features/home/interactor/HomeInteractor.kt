@@ -1,5 +1,6 @@
 package com.arctouch.codechallenge.features.home.interactor
 
+import android.support.v7.widget.SearchView
 import com.arctouch.codechallenge.features.home.model.Movie
 
 /**
@@ -16,5 +17,6 @@ interface HomeInteractor {
     fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: UpcomingMoviesListener)
     fun onDetach()
     fun loadMore(listener: UpcomingMoviesListener, defaultRegion: String, currentPage: Long)
+    fun onSearchMovie(searchView: SearchView)
 
 }

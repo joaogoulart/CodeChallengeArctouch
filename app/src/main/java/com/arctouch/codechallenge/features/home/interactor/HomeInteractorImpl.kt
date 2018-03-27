@@ -1,5 +1,6 @@
 package com.arctouch.codechallenge.features.home.interactor
 
+import android.support.v7.widget.SearchView
 import com.arctouch.codechallenge.R
 import com.arctouch.codechallenge.application.CodeChallengeApplication
 import com.arctouch.codechallenge.common.constants.ApiConstants
@@ -44,9 +45,13 @@ class HomeInteractorImpl: HomeInteractor {
                         is MoviesException -> {
                             listener.onUpcomingMoviesError(it.code, it.msg)
                         }
-                        else -> listener.onUpcomingMoviesError(-1, getString(R.string.error_empity_movies))
+                        else -> listener.onUpcomingMoviesError(1, getString(R.string.error_empity_movies))
                     }
                 }))
+    }
+
+    override fun onSearchMovie(searchView: SearchView) {
+
     }
 
     private fun getMovies(genres: List<Genre>, page: Long, defaultLanguage: String, listener: HomeInteractor.UpcomingMoviesListener, loadMore: Boolean = false) {

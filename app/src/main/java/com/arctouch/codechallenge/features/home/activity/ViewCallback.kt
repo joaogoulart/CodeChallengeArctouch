@@ -11,4 +11,6 @@ interface ViewCallback {
     fun hideNoMovies()
     fun hideRecycler()
     fun allMoviesLoaded()
+    fun scrollToPosition(firstItemVisiblePosition: Int)
+    fun showErrorWithCallback(msg: String)
 }
