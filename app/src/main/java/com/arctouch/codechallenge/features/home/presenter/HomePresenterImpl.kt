@@ -11,9 +11,12 @@ import com.arctouch.codechallenge.features.home.model.Movie
  */
 class HomePresenterImpl(private val viewCallback: ViewCallback, private val interactor: HomeInteractor = HomeInteractorImpl()): HomePresenter, HomeInteractor.UpcomingMoviesListener {
 
+    private var movieList: MutableList<Movie> = mutableListOf()
+    private var currentPage = 1L
+
     override fun onCreate() {
         viewCallback.setUpRecycler()
-        interactor.getUpcomingMovies(1, ApiConstants.DEFAULT_REGION, this)
+        interactor.getUpcomingMovies(currentPage, ApiConstants.DEFAULT_REGION, this)
     }
 
     override fun onUpcomingMoviesError(code: Int, msg: String) {
@@ -27,13 +30,32 @@ class HomePresenterImpl(private val viewCallback: ViewCallback, private val inte
         viewCallback.showError(msg)
     }
 
-    override fun onUpcomingMoviesSuccess(moviesWithGenres: List<Movie>) {
+    override fun onUpcomingMoviesSuccess(moviesWithGenres: MutableList<Movie>) {
         viewCallback.hideProgress()
         viewCallback.hideNoMovies()
-        viewCallback.populateRecycler(moviesWithGenres)
+        updateMoviesList(moviesWithGenres)
+    }
+
+    override fun loadMore() {
+        currentPage++
+        interactor.loadMore(this, ApiConstants.DEFAULT_REGION, currentPage)
     }
 
     override fun onDetach() {
         interactor.onDetach()
+    }
+
+    override fun onLoadMoreMovies(moviesWithGenres: MutableList<Movie>) {
+        if (moviesWithGenres.isEmpty()) {
+            viewCallback.allMoviesLoaded()
+            return
+        }
+
+        updateMoviesList(moviesWithGenres)
+    }
+
+    private fun updateMoviesList(moviesWithGenres: MutableList<Movie>) {
+        movieList.addAll(moviesWithGenres)
+        viewCallback.updateRecycler(movieList)
     }
 }

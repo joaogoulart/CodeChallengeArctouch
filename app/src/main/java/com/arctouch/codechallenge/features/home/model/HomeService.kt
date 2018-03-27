@@ -21,8 +21,8 @@ class HomeService {
         fun genres(): Call<GenreResponse>
 
         @GET("movie/upcoming")
-        fun upcomingMovies(@Query("page") page: Long,
-                           @Query("region") region: String
+        fun upcomingMovies(@Query("page") page: Long
+//                           @Query("region") region: String
         ): Call<UpcomingMoviesResponse>
 
         @GET("movie/{id}")
@@ -45,8 +45,8 @@ class HomeService {
         }
 
         @Throws
-        fun upcomingMovies(genres: List<Genre>, page: Long, defaultLanguage: String): List<Movie> {
-            val execute = CodeChallengeApplication.instance.api.upcomingMovies(page, defaultLanguage).execute()
+        fun upcomingMovies(genres: List<Genre>, page: Long, defaultLanguage: String): MutableList<Movie> {
+            val execute = CodeChallengeApplication.instance.api.upcomingMovies(page).execute()
             val upcomingMoviesResponse = execute.body()
             upcomingMoviesResponse?.let {
                 val moviesWithGenres = it.results.map { movie ->
@@ -56,7 +56,7 @@ class HomeService {
                 if (moviesWithGenres.isEmpty()) {
                     throw MoviesException(1, getString(R.string.error_empity_movies))
                 }
-                return moviesWithGenres
+                return moviesWithGenres.toMutableList()
             }
             throw MoviesException(1, getString(R.string.error_empity_movies))
         }

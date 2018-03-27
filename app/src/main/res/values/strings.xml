@@ -6,4 +6,5 @@
     <string name="error">Error</string>
     <string name="no_movies">No movies found</string>
     <string name="error_empity_genres">No genres where found, try again latter</string>
+    <string name="all_movies_loaded">All movies loaded.</string>
 </resources>

@@ -7,4 +7,5 @@ interface HomePresenter {
 
     fun onCreate()
     fun onDetach()
+    fun loadMore()
 }

@@ -9,10 +9,12 @@ interface HomeInteractor {
 
     interface UpcomingMoviesListener {
         fun onUpcomingMoviesError(code: Int = 0, msg: String)
-        fun onUpcomingMoviesSuccess(moviesWithGenres: List<Movie>)
+        fun onUpcomingMoviesSuccess(moviesWithGenres: MutableList<Movie>)
+        fun onLoadMoreMovies(moviesWithGenres: MutableList<Movie>)
     }
 
-    fun getUpcomingMovies(page: Long, defaultLanguage: String, listener: UpcomingMoviesListener)
+    fun getUpcomingMovies(currentPage: Long, defaultLanguage: String, listener: UpcomingMoviesListener)
     fun onDetach()
+    fun loadMore(listener: UpcomingMoviesListener, defaultRegion: String, currentPage: Long)
 
 }

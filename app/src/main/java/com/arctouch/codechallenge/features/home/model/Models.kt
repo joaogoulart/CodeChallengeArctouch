@@ -11,7 +11,7 @@ data class Genre(val id: Int, val name: String): Parcelable
 
 data class UpcomingMoviesResponse(
         val page: Int,
-        val results: List<Movie>,
+        val results: MutableList<Movie>,
         @SerializedName("total_pages") val totalPages: Int,
         @SerializedName("total_results") val totalResults: Int
 )
